@@ -207,7 +207,7 @@ module.exports = {
       output: 'typescript.worker.js',
       fallback: 'vs/language/typescript/tsWorker',
     },
-    alias: ['javascript'],
+    alias: ['javascript', 'twxTypescript', 'twxJavascript'],
   },
   vb: {
     entry: 'vs/basic-languages/vb/vb.contribution',
