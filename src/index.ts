@@ -165,6 +165,8 @@ function createLoaderRules(languages: IFeatureDefinition[], features: IFeatureDe
   if (workerPaths['typescript']) {
     // javascript shares the same worker
     workerPaths['javascript'] = workerPaths['typescript'];
+    workerPaths['twxTypescript'] = workerPaths['typescript'];
+    workerPaths['twxJavascript'] = workerPaths['typescript'];
   }
   if (workerPaths['css']) {
     // scss and less share the same worker
