@@ -192,6 +192,10 @@ exports.languagesArr = [
         entry: 'vs/basic-languages/redshift/redshift.contribution'
     },
     {
+        label: 'restructuredtext',
+        entry: 'vs/basic-languages/restructuredtext/restructuredtext.contribution'
+    },
+    {
         label: 'ruby',
         entry: 'vs/basic-languages/ruby/ruby.contribution'
     },

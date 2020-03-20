@@ -23,7 +23,12 @@ features_1.featuresArr.forEach(feature => featuresById[feature.label] = feature)
  * Return a resolved path for a given Monaco file.
  */
 function resolveMonacoPath(filePath) {
-    return require.resolve(path.join('monaco-editor/esm', filePath));
+    try {
+        return require.resolve(path.join('monaco-editor/release/esm', filePath));
+    }
+    catch (err) {
+        return require.resolve(path.join(process.cwd(), 'node_modules/monaco-editor/release/esm', filePath));
+    }
 }
 /**
  * Return the interpolated final filename for a worker, respecting the file name template.
@@ -140,7 +145,7 @@ function createLoaderRules(languages, features, workers, filename, pluginPublicP
         getWorkerUrl: function (moduleId, label) {
           var pathPrefix = ${pathPrefix};
           var result = (pathPrefix ? stripTrailingSlash(pathPrefix) + '/' : '') + paths[label];
-          if (/^(http:)|(https:)|(file:)/.test(result)) {
+          if (/^((http:)|(https:)|(file:)|(\\/\\/))/.test(result)) {
             var currentUrl = String(window.location);
             var currentOrigin = currentUrl.substr(0, currentUrl.length - window.location.hash.length - window.location.search.length - window.location.pathname.length);
             if (result.substring(0, currentOrigin.length) !== currentOrigin) {
