@@ -218,7 +218,7 @@ function createLoaderRules(languages: IFeatureDefinition[], features: IFeatureDe
   };
   return [
     {
-      test: /monaco-editor[/\\]esm[/\\]vs[/\\]editor[/\\]editor.(api|main).js/,
+      test: /monaco-editor[/\\]release[/\\]esm[/\\]vs[/\\]editor[/\\]editor.(api|main).js/,
       use: [{
         loader: INCLUDE_LOADER_PATH,
         options: {
