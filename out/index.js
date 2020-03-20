@@ -24,10 +24,10 @@ features_1.featuresArr.forEach(feature => featuresById[feature.label] = feature)
  */
 function resolveMonacoPath(filePath) {
     try {
-        return require.resolve(path.join('monaco-editor/release/esm', filePath));
+        return require.resolve(path.join('monaco-editor/esm', filePath));
     }
     catch (err) {
-        return require.resolve(path.join(process.cwd(), 'node_modules/monaco-editor/release/esm', filePath));
+        return require.resolve(path.join(process.cwd(), 'node_modules/monaco-editor/esm', filePath));
     }
 }
 /**
