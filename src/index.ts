@@ -29,9 +29,9 @@ featuresArr.forEach(feature => featuresById[feature.label] = feature);
  */
 function resolveMonacoPath(filePath: string): string {
   try {
-    return require.resolve(path.join('monaco-editor/release/esm', filePath));
+    return require.resolve(path.join('monaco-editor/esm', filePath));
   } catch(err) {
-    return require.resolve(path.join(process.cwd(), 'node_modules/monaco-editor/release/esm', filePath));
+    return require.resolve(path.join(process.cwd(), 'node_modules/monaco-editor/esm', filePath));
   }
 }
 
@@ -218,7 +218,7 @@ function createLoaderRules(languages: IFeatureDefinition[], features: IFeatureDe
   };
   return [
     {
-      test: /monaco-editor[/\\]release[/\\]esm[/\\]vs[/\\]editor[/\\]editor.(api|main).js/,
+      test: /monaco-editor[/\\]esm[/\\]vs[/\\]editor[/\\]editor.(api|main).js/,
       use: [{
         loader: INCLUDE_LOADER_PATH,
         options: {
