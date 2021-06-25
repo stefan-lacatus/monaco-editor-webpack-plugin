@@ -1,5 +1,5 @@
+import type * as webpack from 'webpack';
 import * as path from 'path';
-import * as webpack from 'webpack';
 import * as loaderUtils from 'loader-utils';
 import * as fs from 'fs';
 import { AddWorkerEntryPointPlugin } from './plugins/AddWorkerEntryPointPlugin';
@@ -99,6 +99,15 @@ interface IMonacoEditorWebpackPluginOpts {
    * Use e.g. '/' if you want to load your resources from the current origin.
    */
   publicPath?: string;
+
+  /**
+   * Specify whether the editor API should be exposed through a global `monaco` object or not. This
+   * option is applicable to `0.22.0` and newer version of `monaco-editor`. Since `0.22.0`, the ESM
+   * version of the monaco editor does no longer define a global `monaco` object unless
+   * `global.MonacoEnvironment = { globalAPI: true }` is set ([change
+   * log](https://github.com/microsoft/monaco-editor/blob/main/CHANGELOG.md#0220-29012021)).
+   */
+  globalAPI?: boolean;
 }
 
 interface IInternalMonacoEditorWebpackPluginOpts {
@@ -106,9 +115,10 @@ interface IInternalMonacoEditorWebpackPluginOpts {
   features: IFeatureDefinition[];
   filename: string;
   publicPath: string;
+  globalAPI: boolean;
 }
 
-class MonacoEditorWebpackPlugin implements webpack.Plugin {
+class MonacoEditorWebpackPlugin implements webpack.WebpackPluginInstance {
 
   private readonly options: IInternalMonacoEditorWebpackPluginOpts;
 
@@ -121,11 +131,12 @@ class MonacoEditorWebpackPlugin implements webpack.Plugin {
       features: coalesce(features.map(id => featuresById[id])),
       filename: options.filename || "[name].worker.js",
       publicPath: options.publicPath || '',
+      globalAPI: options.globalAPI || false,
     };
   }
 
   apply(compiler: webpack.Compiler): void {
-    const { languages, features, filename, publicPath } = this.options;
+    const { languages, features, filename, publicPath, globalAPI } = this.options;
     const compilationPublicPath = getCompilationPublicPath(compiler);
     const modules = [EDITOR_MODULE].concat(languages).concat(features);
     const workers: ILabeledWorkerDefinition[] = [];
@@ -138,8 +149,8 @@ class MonacoEditorWebpackPlugin implements webpack.Plugin {
         });
       }
     });
-    const rules = createLoaderRules(languages, features, workers, filename, publicPath, compilationPublicPath);
-    const plugins = createPlugins(workers, filename);
+    const rules = createLoaderRules(languages, features, workers, filename, publicPath, compilationPublicPath, globalAPI);
+    const plugins = createPlugins(compiler, workers, filename);
     addCompilerRules(compiler, rules);
     addCompilerPlugins(compiler, plugins);
   }
@@ -154,22 +165,29 @@ interface ILabeledWorkerDefinition {
 function addCompilerRules(compiler: webpack.Compiler, rules: webpack.RuleSetRule[]): void {
   const compilerOptions = compiler.options;
   if (!compilerOptions.module) {
-    compilerOptions.module = { rules: rules };
+    compilerOptions.module = <any>{ rules: rules };
   } else {
     const moduleOptions = compilerOptions.module;
     moduleOptions.rules = (moduleOptions.rules || []).concat(rules);
   }
 }
 
-function addCompilerPlugins(compiler: webpack.Compiler, plugins: webpack.Plugin[]) {
+function addCompilerPlugins(compiler: webpack.Compiler, plugins: webpack.WebpackPluginInstance[]) {
   plugins.forEach((plugin) => plugin.apply(compiler));
 }
 
 function getCompilationPublicPath(compiler: webpack.Compiler): string {
-  return compiler.options.output && compiler.options.output.publicPath || '';
+  if (compiler.options.output && compiler.options.output.publicPath) {
+    if (typeof compiler.options.output.publicPath === 'string') {
+      return compiler.options.output.publicPath;
+    } else {
+      console.warn(`Cannot handle options.publicPath (expected a string)`);
+    }
+  }
+  return '';
 }
 
-function createLoaderRules(languages: IFeatureDefinition[], features: IFeatureDefinition[], workers: ILabeledWorkerDefinition[], filename: string, pluginPublicPath: string, compilationPublicPath: string): webpack.RuleSetRule[] {
+function createLoaderRules(languages: IFeatureDefinition[], features: IFeatureDefinition[], workers: ILabeledWorkerDefinition[], filename: string, pluginPublicPath: string, compilationPublicPath: string, globalAPI: boolean): webpack.RuleSetRule[] {
   if (!languages.length && !features.length) {
     return [];
   }
@@ -210,6 +228,7 @@ function createLoaderRules(languages: IFeatureDefinition[], features: IFeatureDe
         return str.replace(/\\/$/, '');
       }
       return {
+        globalAPI: ${globalAPI},
         getWorkerUrl: function (moduleId, label) {
           var pathPrefix = ${pathPrefix};
           var result = (pathPrefix ? stripTrailingSlash(pathPrefix) + '/' : '') + paths[label];
@@ -242,7 +261,9 @@ function createLoaderRules(languages: IFeatureDefinition[], features: IFeatureDe
   ];
 }
 
-function createPlugins(workers: ILabeledWorkerDefinition[], filename: string): AddWorkerEntryPointPlugin[] {
+function createPlugins(compiler: webpack.Compiler, workers: ILabeledWorkerDefinition[], filename: string): AddWorkerEntryPointPlugin[] {
+  const webpack = compiler.webpack ?? require('webpack');
+
   return (
     (<AddWorkerEntryPointPlugin[]>[])
       .concat(workers.map(({ id, entry }) =>

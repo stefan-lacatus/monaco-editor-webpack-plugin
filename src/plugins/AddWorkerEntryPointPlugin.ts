@@ -1,19 +1,17 @@
-import * as webpack from 'webpack';
-const webpackVersion = require('webpack/package.json').version;
-const SingleEntryPlugin = require('webpack/lib/SingleEntryPlugin');
-const LoaderTargetPlugin = require('webpack/lib/LoaderTargetPlugin');
-const WebWorkerTemplatePlugin = require('webpack/lib/webworker/WebWorkerTemplatePlugin');
+import type * as webpack from 'webpack';
 
 export interface IAddWorkerEntryPointPluginOptions {
   id: string;
   entry: string;
   filename: string;
   chunkFilename?: string;
-  plugins: webpack.Plugin[];
+  plugins: webpack.WebpackPluginInstance[];
 }
 
 function getCompilerHook(compiler: webpack.Compiler, { id, entry, filename, chunkFilename, plugins }: IAddWorkerEntryPointPluginOptions) {
-  return function (compilation: webpack.compilation.Compilation, callback: Function) {
+  const webpack = compiler.webpack ?? require('webpack');
+
+  return function (compilation: webpack.Compilation, callback: (error?: Error | null | false) => void) {
     const outputOptions = {
       filename,
       chunkFilename,
@@ -21,18 +19,19 @@ function getCompilerHook(compiler: webpack.Compiler, { id, entry, filename, chun
       // HACK: globalObject is necessary to fix https://github.com/webpack/webpack/issues/6642
       globalObject: 'this',
     };
-    const childCompiler = (<any>compilation).createChildCompiler(id, outputOptions, [
-      new WebWorkerTemplatePlugin(),
-      new LoaderTargetPlugin('webworker'),
+    const childCompiler = compilation.createChildCompiler(id, outputOptions, [
+      new webpack.webworker.WebWorkerTemplatePlugin(),
+      new webpack.LoaderTargetPlugin('webworker'),
     ]);
+    const SingleEntryPlugin = webpack.EntryPlugin ?? webpack.SingleEntryPlugin;
     new SingleEntryPlugin(compiler.context, entry, 'main').apply(childCompiler);
     plugins.forEach((plugin) => plugin.apply(childCompiler));
 
-    childCompiler.runAsChild(callback);
+    childCompiler.runAsChild((err?: Error) => callback(err));
   }
 }
 
-export class AddWorkerEntryPointPlugin implements webpack.Plugin {
+export class AddWorkerEntryPointPlugin implements webpack.WebpackPluginInstance {
 
   private readonly options: IAddWorkerEntryPointPluginOptions;
 
@@ -41,9 +40,11 @@ export class AddWorkerEntryPointPlugin implements webpack.Plugin {
   }
 
   apply(compiler: webpack.Compiler) {
+    const webpack = compiler.webpack ?? require('webpack');
     const compilerHook = getCompilerHook(compiler, this.options);
-    if (webpackVersion < '4') {
-      compiler.plugin('make', compilerHook);
+    const majorVersion = webpack.version.split('.')[0]
+    if (parseInt(majorVersion) < 4) {
+      (<any>compiler).plugin('make', compilerHook);
     } else {
       compiler.hooks.make.tapAsync('AddWorkerEntryPointPlugin', compilerHook);
     }

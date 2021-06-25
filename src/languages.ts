@@ -22,6 +22,10 @@ export const languagesArr: IFeatureDefinition[] = [
     entry: 'vs/basic-languages/bat/bat.contribution'
   },
   {
+    label: 'bicep',
+    entry: 'vs/basic-languages/bicep/bicep.contribution'
+  },
+  {
     label: 'cameligo',
     entry: 'vs/basic-languages/cameligo/cameligo.contribution'
   },
@@ -63,6 +67,14 @@ export const languagesArr: IFeatureDefinition[] = [
   {
     label: 'dockerfile',
     entry: 'vs/basic-languages/dockerfile/dockerfile.contribution'
+  },
+  {
+    label: 'ecl',
+    entry: 'vs/basic-languages/ecl/ecl.contribution'
+  },
+  {
+    label: 'elixir',
+    entry: 'vs/basic-languages/elixir/elixir.contribution'
   },
   {
     label: 'fsharp',
@@ -132,8 +144,16 @@ export const languagesArr: IFeatureDefinition[] = [
     entry: 'vs/basic-languages/lexon/lexon.contribution'
   },
   {
+    label: 'liquid',
+    entry: 'vs/basic-languages/liquid/liquid.contribution'
+  },
+  {
     label: 'lua',
     entry: 'vs/basic-languages/lua/lua.contribution'
+  },
+  {
+    label: 'm3',
+    entry: 'vs/basic-languages/m3/m3.contribution'
   },
   {
     label: 'markdown',
@@ -300,5 +320,5 @@ export const languagesArr: IFeatureDefinition[] = [
   }
 ];
 
-export type EditorLanguage = 'abap' | 'apex' | 'azcli' | 'bat' | 'cameligo' | 'clojure' | 'coffee' | 'cpp' | 'csharp' | 'csp' | 'css' | 'dart' | 'dockerfile' | 'fsharp' | 'go' | 'graphql' | 'handlebars' | 'hcl' | 'html' | 'ini' | 'java' | 'javascript' | 'json' | 'julia' | 'kotlin' | 'less' | 'lexon' | 'lua' | 'markdown' | 'mips' | 'msdax' | 'mysql' | 'objective-c' | 'pascal' | 'pascaligo' | 'perl' | 'pgsql' | 'php' | 'postiats' | 'powerquery' | 'powershell' | 'pug' | 'python' | 'r' | 'razor' | 'redis' | 'redshift' | 'restructuredtext' | 'ruby' | 'rust' | 'sb' | 'scala' | 'scheme' | 'scss' | 'shell' | 'solidity' | 'sophia' | 'sql' | 'st' | 'swift' | 'systemverilog' | 'tcl' | 'twig' | 'typescript' | 'vb' | 'xml' | 'yaml';
+export type EditorLanguage = 'abap' | 'apex' | 'azcli' | 'bat' | 'bicep' | 'cameligo' | 'clojure' | 'coffee' | 'cpp' | 'csharp' | 'csp' | 'css' | 'dart' | 'dockerfile' | 'ecl' | 'elixir' | 'fsharp' | 'go' | 'graphql' | 'handlebars' | 'hcl' | 'html' | 'ini' | 'java' | 'javascript' | 'json' | 'julia' | 'kotlin' | 'less' | 'lexon' | 'liquid' | 'lua' | 'm3' | 'markdown' | 'mips' | 'msdax' | 'mysql' | 'objective-c' | 'pascal' | 'pascaligo' | 'perl' | 'pgsql' | 'php' | 'postiats' | 'powerquery' | 'powershell' | 'pug' | 'python' | 'r' | 'razor' | 'redis' | 'redshift' | 'restructuredtext' | 'ruby' | 'rust' | 'sb' | 'scala' | 'scheme' | 'scss' | 'shell' | 'solidity' | 'sophia' | 'sql' | 'st' | 'swift' | 'systemverilog' | 'tcl' | 'twig' | 'typescript' | 'vb' | 'xml' | 'yaml';
 
