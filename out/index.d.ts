@@ -1,11 +1,16 @@
-import * as webpack from 'webpack';
+import type * as webpack from 'webpack';
 import { EditorLanguage } from './languages';
 import { EditorFeature, NegatedEditorFeature } from './features';
+import { IFeatureDefinition } from './types';
 interface IMonacoEditorWebpackPluginOpts {
     /**
      * Include only a subset of the languages supported.
      */
     languages?: EditorLanguage[];
+    /**
+     * Custom languages (outside of the ones shipped with the `monaco-editor`).
+     */
+    customLanguages?: IFeatureDefinition[];
     /**
      * Include only a subset of the editor features.
      * Use e.g. '!contextmenu' to exclude a certain feature.
@@ -23,8 +28,16 @@ interface IMonacoEditorWebpackPluginOpts {
      * Use e.g. '/' if you want to load your resources from the current origin.
      */
     publicPath?: string;
+    /**
+     * Specify whether the editor API should be exposed through a global `monaco` object or not. This
+     * option is applicable to `0.22.0` and newer version of `monaco-editor`. Since `0.22.0`, the ESM
+     * version of the monaco editor does no longer define a global `monaco` object unless
+     * `global.MonacoEnvironment = { globalAPI: true }` is set ([change
+     * log](https://github.com/microsoft/monaco-editor/blob/main/CHANGELOG.md#0220-29012021)).
+     */
+    globalAPI?: boolean;
 }
-declare class MonacoEditorWebpackPlugin implements webpack.Plugin {
+declare class MonacoEditorWebpackPlugin implements webpack.WebpackPluginInstance {
     private readonly options;
     constructor(options?: IMonacoEditorWebpackPluginOpts);
     apply(compiler: webpack.Compiler): void;

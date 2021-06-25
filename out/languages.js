@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.languagesArr = void 0;
 exports.languagesArr = [
     {
         label: 'abap',
@@ -16,6 +17,10 @@ exports.languagesArr = [
     {
         label: 'bat',
         entry: 'vs/basic-languages/bat/bat.contribution'
+    },
+    {
+        label: 'bicep',
+        entry: 'vs/basic-languages/bicep/bicep.contribution'
     },
     {
         label: 'cameligo',
@@ -53,8 +58,20 @@ exports.languagesArr = [
         }
     },
     {
+        label: 'dart',
+        entry: 'vs/basic-languages/dart/dart.contribution'
+    },
+    {
         label: 'dockerfile',
         entry: 'vs/basic-languages/dockerfile/dockerfile.contribution'
+    },
+    {
+        label: 'ecl',
+        entry: 'vs/basic-languages/ecl/ecl.contribution'
+    },
+    {
+        label: 'elixir',
+        entry: 'vs/basic-languages/elixir/elixir.contribution'
     },
     {
         label: 'fsharp',
@@ -71,6 +88,10 @@ exports.languagesArr = [
     {
         label: 'handlebars',
         entry: 'vs/basic-languages/handlebars/handlebars.contribution'
+    },
+    {
+        label: 'hcl',
+        entry: 'vs/basic-languages/hcl/hcl.contribution'
     },
     {
         label: 'html',
@@ -104,6 +125,10 @@ exports.languagesArr = [
         }
     },
     {
+        label: 'julia',
+        entry: 'vs/basic-languages/julia/julia.contribution'
+    },
+    {
         label: 'kotlin',
         entry: 'vs/basic-languages/kotlin/kotlin.contribution'
     },
@@ -112,8 +137,20 @@ exports.languagesArr = [
         entry: 'vs/basic-languages/less/less.contribution'
     },
     {
+        label: 'lexon',
+        entry: 'vs/basic-languages/lexon/lexon.contribution'
+    },
+    {
+        label: 'liquid',
+        entry: 'vs/basic-languages/liquid/liquid.contribution'
+    },
+    {
         label: 'lua',
         entry: 'vs/basic-languages/lua/lua.contribution'
+    },
+    {
+        label: 'm3',
+        entry: 'vs/basic-languages/m3/m3.contribution'
     },
     {
         label: 'markdown',
@@ -208,6 +245,10 @@ exports.languagesArr = [
         entry: 'vs/basic-languages/sb/sb.contribution'
     },
     {
+        label: 'scala',
+        entry: 'vs/basic-languages/scala/scala.contribution'
+    },
+    {
         label: 'scheme',
         entry: 'vs/basic-languages/scheme/scheme.contribution'
     },
@@ -238,6 +279,10 @@ exports.languagesArr = [
     {
         label: 'swift',
         entry: 'vs/basic-languages/swift/swift.contribution'
+    },
+    {
+        label: 'systemverilog',
+        entry: 'vs/basic-languages/systemverilog/systemverilog.contribution'
     },
     {
         label: 'tcl',

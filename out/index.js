@@ -1,6 +1,5 @@
 "use strict";
 const path = require("path");
-const webpack = require("webpack");
 const loaderUtils = require("loader-utils");
 const fs = require("fs");
 const AddWorkerEntryPointPlugin_1 = require("./plugins/AddWorkerEntryPointPlugin");
@@ -27,7 +26,12 @@ function resolveMonacoPath(filePath) {
         return require.resolve(path.join('monaco-editor/esm', filePath));
     }
     catch (err) {
-        return require.resolve(path.join(process.cwd(), 'node_modules/monaco-editor/esm', filePath));
+        try {
+            return require.resolve(path.join(process.cwd(), 'node_modules/monaco-editor/esm', filePath));
+        }
+        catch (err) {
+            return require.resolve(filePath);
+        }
     }
 }
 /**
@@ -60,16 +64,18 @@ function getFeaturesIds(userFeatures) {
 class MonacoEditorWebpackPlugin {
     constructor(options = {}) {
         const languages = options.languages || Object.keys(languagesById);
+        const customLanguages = options.customLanguages || [];
         const features = getFeaturesIds(options.features || []);
         this.options = {
-            languages: coalesce(languages.map(id => languagesById[id])),
+            languages: coalesce(languages.map(id => languagesById[id])).concat(customLanguages),
             features: coalesce(features.map(id => featuresById[id])),
             filename: options.filename || "[name].worker.js",
             publicPath: options.publicPath || '',
+            globalAPI: options.globalAPI || false,
         };
     }
     apply(compiler) {
-        const { languages, features, filename, publicPath } = this.options;
+        const { languages, features, filename, publicPath, globalAPI } = this.options;
         const compilationPublicPath = getCompilationPublicPath(compiler);
         const modules = [EDITOR_MODULE].concat(languages).concat(features);
         const workers = [];
@@ -82,8 +88,8 @@ class MonacoEditorWebpackPlugin {
                 });
             }
         });
-        const rules = createLoaderRules(languages, features, workers, filename, publicPath, compilationPublicPath);
-        const plugins = createPlugins(workers, filename);
+        const rules = createLoaderRules(languages, features, workers, filename, publicPath, compilationPublicPath, globalAPI);
+        const plugins = createPlugins(compiler, workers, filename);
         addCompilerRules(compiler, rules);
         addCompilerPlugins(compiler, plugins);
     }
@@ -102,9 +108,17 @@ function addCompilerPlugins(compiler, plugins) {
     plugins.forEach((plugin) => plugin.apply(compiler));
 }
 function getCompilationPublicPath(compiler) {
-    return compiler.options.output && compiler.options.output.publicPath || '';
+    if (compiler.options.output && compiler.options.output.publicPath) {
+        if (typeof compiler.options.output.publicPath === 'string') {
+            return compiler.options.output.publicPath;
+        }
+        else {
+            console.warn(`Cannot handle options.publicPath (expected a string)`);
+        }
+    }
+    return '';
 }
-function createLoaderRules(languages, features, workers, filename, pluginPublicPath, compilationPublicPath) {
+function createLoaderRules(languages, features, workers, filename, pluginPublicPath, compilationPublicPath, globalAPI) {
     if (!languages.length && !features.length) {
         return [];
     }
@@ -142,6 +156,7 @@ function createLoaderRules(languages, features, workers, filename, pluginPublicP
         return str.replace(/\\/$/, '');
       }
       return {
+        globalAPI: ${globalAPI},
         getWorkerUrl: function (moduleId, label) {
           var pathPrefix = ${pathPrefix};
           var result = (pathPrefix ? stripTrailingSlash(pathPrefix) + '/' : '') + paths[label];
@@ -150,7 +165,8 @@ function createLoaderRules(languages, features, workers, filename, pluginPublicP
             var currentOrigin = currentUrl.substr(0, currentUrl.length - window.location.hash.length - window.location.search.length - window.location.pathname.length);
             if (result.substring(0, currentOrigin.length) !== currentOrigin) {
               var js = '/*' + label + '*/importScripts("' + result + '");';
-              return 'data:text/javascript;charset=utf-8,' + encodeURIComponent(js);
+              var blob = new Blob([js], { type: 'application/javascript' });
+              return URL.createObjectURL(blob);
             }
           }
           return result;
@@ -172,7 +188,9 @@ function createLoaderRules(languages, features, workers, filename, pluginPublicP
         },
     ];
 }
-function createPlugins(workers, filename) {
+function createPlugins(compiler, workers, filename) {
+    var _a;
+    const webpack = (_a = compiler.webpack) !== null && _a !== void 0 ? _a : require('webpack');
     return ([]
         .concat(workers.map(({ id, entry }) => new AddWorkerEntryPointPlugin_1.AddWorkerEntryPointPlugin({
         id,

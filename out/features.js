@@ -1,9 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.featuresArr = void 0;
 exports.featuresArr = [
     {
         label: 'accessibilityHelp',
         entry: 'vs/editor/standalone/browser/accessibilityHelp/accessibilityHelp'
+    },
+    {
+        label: 'anchorSelect',
+        entry: 'vs/editor/contrib/anchorSelect/anchorSelect'
     },
     {
         label: 'bracketMatching',
@@ -26,8 +31,8 @@ exports.featuresArr = [
         entry: 'vs/editor/contrib/codelens/codelensController'
     },
     {
-        label: 'colorDetector',
-        entry: 'vs/editor/contrib/colorPicker/colorDetector'
+        label: 'colorPicker',
+        entry: 'vs/editor/contrib/colorPicker/colorContributions'
     },
     {
         label: 'comment',
@@ -48,6 +53,10 @@ exports.featuresArr = [
     {
         label: 'dnd',
         entry: 'vs/editor/contrib/dnd/dnd'
+    },
+    {
+        label: 'documentSymbols',
+        entry: 'vs/editor/contrib/documentSymbols/documentSymbols'
     },
     {
         label: 'find',
@@ -71,7 +80,7 @@ exports.featuresArr = [
     },
     {
         label: 'gotoLine',
-        entry: 'vs/editor/standalone/browser/quickOpen/gotoLine'
+        entry: 'vs/editor/standalone/browser/quickAccess/standaloneGotoLineQuickAccess'
     },
     {
         label: 'gotoSymbol',
@@ -93,12 +102,28 @@ exports.featuresArr = [
         entry: 'vs/editor/contrib/inPlaceReplace/inPlaceReplace'
     },
     {
+        label: 'indentation',
+        entry: 'vs/editor/contrib/indentation/indentation'
+    },
+    {
+        label: 'inlayHints',
+        entry: 'vs/editor/contrib/inlayHints/inlayHintsController'
+    },
+    {
+        label: 'inlineCompletions',
+        entry: 'vs/editor/contrib/inlineCompletions/ghostTextController'
+    },
+    {
         label: 'inspectTokens',
         entry: 'vs/editor/standalone/browser/inspectTokens/inspectTokens'
     },
     {
         label: 'linesOperations',
         entry: 'vs/editor/contrib/linesOperations/linesOperations'
+    },
+    {
+        label: 'linkedEditing',
+        entry: 'vs/editor/contrib/linkedEditing/linkedEditing'
     },
     {
         label: 'links',
@@ -114,11 +139,15 @@ exports.featuresArr = [
     },
     {
         label: 'quickCommand',
-        entry: 'vs/editor/standalone/browser/quickOpen/quickCommand'
+        entry: 'vs/editor/standalone/browser/quickAccess/standaloneCommandsQuickAccess'
+    },
+    {
+        label: 'quickHelp',
+        entry: 'vs/editor/standalone/browser/quickAccess/standaloneHelpQuickAccess'
     },
     {
         label: 'quickOutline',
-        entry: 'vs/editor/standalone/browser/quickOpen/quickOutline'
+        entry: 'vs/editor/standalone/browser/quickAccess/standaloneGotoSymbolQuickAccess'
     },
     {
         label: 'referenceSearch',
@@ -151,6 +180,14 @@ exports.featuresArr = [
     {
         label: 'transpose',
         entry: 'vs/editor/contrib/caretOperations/transpose'
+    },
+    {
+        label: 'unusualLineTerminators',
+        entry: 'vs/editor/contrib/unusualLineTerminators/unusualLineTerminators'
+    },
+    {
+        label: 'viewportSemanticTokens',
+        entry: 'vs/editor/contrib/viewportSemanticTokens/viewportSemanticTokens'
     },
     {
         label: 'wordHighlighter',

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.pitch = void 0;
 const loaderUtils = require('loader-utils');
 function pitch(remainingRequest) {
     const { globals = undefined, pre = [], post = [] } = loaderUtils.getOptions(this) || {};
